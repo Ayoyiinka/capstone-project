@@ -1,55 +1,83 @@
-# Udacity Cloud Developer
-## My own Instagram!
+# Car Pool App
 
-###  Unit tests
+## Summary
 
-Each module has it's own unit testing command. You have to go inside each directory and run
-`npm install`, if the dependencies are not installed then `npm test`.
-The coverage is still small, but it's intended to increase it soon.
+This application is my capstone project for the [Udacity Cloud Developer Nanodegree](https://www.udacity.com/course/cloud-developer-nanodegree--nd9990)
 
-### Running locally with Docker
+As a user, you can login and register your car for loaning purposes on a P2P marketplace
 
-#### Step by step
+It demonstrates
+* AWS 
+  * Lambdas (serverless functions)
+  * DynamoDB (database)
+  * S3 Bucket (storage of images)
 
-1. Set DOCKER_USER and DOCKER_PASS environment variables in travis-ci
+* [Serverless Framework](https://serverless.com/)
+* WebApp Client
+  * ReactJS
+* [Auth0](https://auth0.com/)
+  * 3rd party OAuth integration
+* Optimisations
+  * Global Secondary Indexes on DynamoDB
+  * Individual packaging of Lambdas
 
-2. Check the deployment folder to change the image key in files to the name of the equivalent or preferred docker hub repository.
 
-3. Push changes to github. Wait till travis-ci build is completed and check docker hub for all the images.
+## Requirements
 
-4. You should define these envinronment variables locally:
-  - POSTGRESS_USERNAME
-  - POSTGRESS_PASSWORD
-  - POSTGRESS_DB
-  - POSTGRESS_HOST
-  - AWS_REGION
-  - AWS_PROFILE
-  - AWS_BUCKET
-  - JWT_SECRET
+* [Node 12](https://nodejs.org/en/)
+* [AWS Account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html)
+* [AWS CLI](https://aws.amazon.com/cli/)
+* [Serverless](https://serverless.com/framework/docs/getting-started/)
+* [Auth0](https://auth0.com/)
 
-#### Set up envinronment variables
-
-Set up the envinroment variables properly in
-`./deployment/k8s/env-configmap.yaml`.
-
-Then you should set your secrets in `env-secrets.yaml` and `aws-secret.yaml`.
-These secrets should be stored as base64 strings. You could use `echo yourstring | base64` to
-convert a string to base64 encoded or `base64 -in /path/to/file` to convert a file.
-
-5. Create a cluster and nodes on AWS 
-#### Load environment variables, deployments and services
-
-Execute `kubectl apply -f ./deployment/k8s/.` to load all configmaps, secrets,
-deployments and services.
-
-You could run `kubectl get all` to check if everything is running.
-
-#### Port forwarding
-
-To connect your localhost ports with the containers execute:
-```
-kubectl port-forward service/frontend 8100:8100
-kubectl port-forward service/reverseproxy 8080:8080
+## Installation
+Use the node package manager to install car-pool
+```bash
+cd service
+npm install
+cd ../client
+npm install
 ```
 
-See the app running in `localhost:8100`.
+## Usage
+
+#### Serverless Deployment (Manual)
+Firstly, the serverless application should be deployed to AWS
+Here I'm assuming that you have an AWS Profile of _serverless_ and are deploying to region _eu-west-2_. The NODE_OPTIONS setting is to help avoid memory problems in Node when packaging the lambdas as separate deployables.
+```bash
+export NODE_OPTIONS=--max_old_space_size=4096
+
+sls deploy -v
+```
+#### Serverless CD (configure online)
+Go to https://dashboard.serverless.com/ and setup account/login
+Your deployed app should be available for easy setup of automated CD once it has been deployed manually
+
+
+#### Client Local Start
+1) Update the client/src/config.ts credentials to match your Auth0 account (for authentication) and Serverless deployment (for REST API calls)
+2) The client can be installed and run locally 
+```bash
+cd client
+
+npm start
+```
+
+## Files
+- __car\-pool__
+   - __client__ (Web App)
+     - __public__ (standard React App files)
+     - __src__
+       - __api__ (REST API to Service)
+       - __auth__ (Auth0 3rd party authentication)
+       - __components__ (React Components)
+       - __types__ (Typescript Interfaces)
+       - __utils__
+   - __service__ (Serverless Stack)
+     - [serverless.yml](service/serverless.yml) (Serverless framework config file)
+     - __src__
+       - __auth__ (JWT handling)
+       - __lambda__ (Serverless lambdas)
+         - __http__ (separate HTTP handlers)
+       - __models__ (Typescript interfaces)
+       - __utils__ (Logging module)
