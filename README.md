@@ -6,7 +6,7 @@
 # Udacity Cloud Developer
 ## My own Instagram!
 
-### Unit tests
+###  Unit tests
 
 Each module has it's own unit testing command. You have to go inside each directory and run
 `npm install`, if the dependencies are not installed then `npm test`.
